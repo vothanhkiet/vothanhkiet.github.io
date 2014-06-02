@@ -1,0 +1,12 @@
+body {
+  min-height: 2000px;
+}
+
+.navbar-static-top {
+  margin-bottom: 19px;
+}
+
+.info p {
+	font-size: 11px;
+	margin-bottom: 0
+}
