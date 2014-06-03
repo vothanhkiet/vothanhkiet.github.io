@@ -52,7 +52,7 @@
       <div class="alert alert-info alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <p><strong>Announcement!</strong> </p>
-        <p>Welcome all of you, booters!</p>
+        <p>Welcome all of you, botters!</p>
       </div>
 
       <!-- Create box -->
@@ -96,7 +96,7 @@
             <tr ng-repeat="(id, key) in keys" >
               <td>{{$index + 1}}</td>
               <td>{{key.date | date:"yyyy-MM-dd"}}</td>
-              <td>{{key.gameKey}}</td>
+              <td>{{id}}</td>
               <td>{{key.xorKey}}</td>
               <td>
                 <a href="#" ng-click="removeKey(id)">

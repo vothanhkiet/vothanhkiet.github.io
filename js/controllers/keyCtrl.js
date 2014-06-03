@@ -16,7 +16,7 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 		$scope.keys.$getIndex().forEach(function (index) {
 			var key = $scope.keys[index];
 
-			if (!key || !key.gameKey || !key.xorKey) {
+			if (!key || !key.xorKey) {
 				return;
 			}
 
@@ -37,8 +37,7 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 			return;
 		}
 
-		$scope.keys.$add({
-			gameKey: gameKey,
+		keysRef.child(gameKey).set({
 			xorKey: xorKey,
 			date: new Date().getTime()
 		});
