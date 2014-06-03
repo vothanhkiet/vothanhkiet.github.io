@@ -93,13 +93,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="(id, key) in keys" >
+            <tr ng-repeat="(id, key) in keys | orderByPriority" >
               <td>{{$index + 1}}</td>
-              <td>{{key.date | date:"yyyy-MM-dd"}}</td>
-              <td>{{id}}</td>
+              <td>{{key.date | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+              <td>{{key.gameKey}}</td>
               <td>{{key.xorKey}}</td>
               <td>
-                <a href="#" ng-click="removeKey(id)">
+                <a href="#" ng-click="removeKey(key.gameKey)">
                   <i class="glyphicon glyphicon-remove"></i>
                 </a>
               </td>
