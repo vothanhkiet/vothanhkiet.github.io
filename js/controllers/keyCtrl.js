@@ -13,6 +13,7 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 
 	$scope.$watch('keys', function () {
 		var total = 0;
+
 		$scope.keys.$getIndex().forEach(function (index) {
 			var key = $scope.keys[index];
 
@@ -31,16 +32,20 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 	 */
 	$scope.addKey = function () {
 		var gameKey = $scope.gameKey.trim(),
-			xorKey = $scope.xorKey.trim();
+			xorKey = $scope.xorKey.trim(),
+			currentTime = new Date().getTime();
 
 		if (!gameKey.length || !xorKey.length) {
 			return;
 		}
 
-		keysRef.child(gameKey).set({
+		var gameKeyRef = keysRef.child(gameKey);
+
+		gameKeyRef.setWithPriority({
+			gameKey: gameKey,
 			xorKey: xorKey,
-			date: new Date().getTime()
-		});
+			date: currentTime
+		}, -currentTime);
 
 		$scope.gameKey = '';
 		$scope.xorKey = '';
