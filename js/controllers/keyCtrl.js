@@ -10,6 +10,7 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 	var url = 'https://l2proxy.firebaseio.com/';
 	var fireRef = new Firebase(url);
 	var keysRef = fireRef.child('keys');
+	var arrKeys = [];
 
 	$scope.$watch('keys', function () {
 		var total = 0;
@@ -20,10 +21,11 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 			if (!key || !key.xorKey) {
 				return;
 			}
-
+			arrKeys.push(key.xorKey);
 			total++;
 		});
-
+		
+		$scope.arrKeys = arrKeys;
 		$scope.totalCount = total;
 	}, true);
 
@@ -33,10 +35,18 @@ l2proxy.controller('KeyCtrl', function KeyCtrl($scope, $location, $firebase) {
 	$scope.addKey = function () {
 		var gameKey = $scope.gameKey.trim(),
 			xorKey = $scope.xorKey.trim(),
-			currentTime = new Date().getTime();
+			currentTime = new Date().getTime(),
+			rs = false;
 
 		if (!gameKey.length || !xorKey.length) {
 			return;
+		}
+
+		//check overwrite
+		if ($scope.arrKeys.indexOf(xorKey) > -1) {
+			if (!confirm("Do you want to overwrite this key?")) {
+				return false;
+			}
 		}
 
 		var gameKeyRef = keysRef.child(gameKey);
