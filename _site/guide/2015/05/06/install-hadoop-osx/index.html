@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Install Hadoop stack on OSX</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">        
+        <meta name="description" content="Kiet Thanh Vo 's blog
+">
+        <link rel="canonical" 
+        href="http://localhost:4000/guide/2015/05/06/install-hadoop-osx/">
+        
+        <!-- Harmony styles -->
+        <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
+
+        <!-- Modernizr js -->
+        <script async src="/assets/js/modernizr.js"></script>    
+
+        <!-- IE Fixes -->
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->        
+    </head>
+    <body class="theme-base-01">
+        <header class="main-header">
+            <div class="wc-container">
+                <h1><a href="/">Kiet Thanh Vo's Blog</a></h1>
+                <h2>Just a simple blog of mine.</h2>
+                <ul>
+	<li>
+		<a href="http://localhost:4000/about">About</a><span>/</span>
+	</li>
+	<li>
+		<a href="http://localhost:4000/blog">Blog</a><span>/</span>
+	</li>
+	<li>
+		<a href="http://localhost:4000/tags">Tags</a><span>/</span>
+	</li>
+	
+	<li>
+		<a title="vothanhkiet on Github" 
+			href="https://github.com/vothanhkiet" target="_blank">
+			Github
+		</a><span>/</span>
+	</li>
+	
+</ul>                
+            </div>
+        </header>
+        <div class="page-content wc-container">
+	
+	<div class="post">
+		<h1>Install Hadoop stack on OSX</h1>
+		<p class="post-meta">
+			
+      <span class="categories">
+      guide
+      </span> |
+	    
+	    <span class="post-date">
+    	May 6, 2015 
+	    </span>
+		</p>		
+		<div class="post">
+			<h3 id="ssh-setup-and-key-generation">SSH Setup and Key Generation</h3>
+<p>SSH setup is required to do different operations on a cluster such as starting, stopping, distributed daemon shell operations. To authenticate different users of Hadoop, it is required to provide public/private key pair for a Hadoop user and share it with different users.</p>
+
+<p>The following commands are used for generating a key value pair using SSH. Copy the public keys form id_rsa.pub to authorized_keys, and provide the owner with read and write permissions to authorized_keys file respectively.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">ssh-keygen -t rsa 
+cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys 
+chmod <span class="m">0600</span> ~/.ssh/authorized_keys</code></pre></div>
+
+<h3 id="install-homebrew">Install HomeBrew</h3>
+<p>Paste the following command at the terminal:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">ruby -e <span class="s2">&quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span></code></pre></div>
+
+<p>Perform update all HomeBrew recipes</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">brew update</code></pre></div>
+
+<h3 id="install-hadoop">Install Hadoop</h3>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">brew install hadoop</code></pre></div>
+
+<p>Hadoop will be install in the following directory ( x.x.x is the Hadoop version)</p>
+
+<pre><code>/usr/local/Cellar/hadoop/x.x.x
+</code></pre>
+
+<h3 id="configuring-hadoop-in-pseudo-distributed-mode">Configuring Hadoop in Pseudo Distributed Mode</h3>
+<p>#### Edit core-site.xml
+The <strong>core-site.xml</strong> file contains information such as the port number used for Hadoop instance, memory allocated for the file system, memory limit for storing the data, and size of Read/Write buffers.</p>
+
+<p>The file can be located at <em>/usr/local/Cellar/hadoop/x.x.x/libexec/etc/hadoop/core-site.xml</em>. Open the core-site.xml and add the following properties in between  <em>&lt;configuration&gt;</em> and  <em>&lt;/configuration&gt;</em> tags.</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>hadoop.tmp.dir<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>/usr/local/Cellar/hadoop/hdfs/tmp<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;description&gt;</span>A base for other temporary directories.<span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>fs.default.name<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>hdfs://localhost:9000<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></div>
+
+<h4 id="edit-hdfs-sitexml">Edit hdfs-site.xml</h4>
+<p>The <strong>hdfs-site.xml</strong> file contains information such as the value of replication data, namenode path, and datanode paths of your local file systems. It means the place where you want to store the Hadoop infrastructure.</p>
+
+<p>The file can be located at <em>/usr/local/Cellar/hadoop/x.x.x/libexec/etc/hadoop/hdfs-site.xml</em>. Open the core-site.xml and add the following properties in between  <em>&lt;configuration&gt;</em> and  <em>&lt;/configuration&gt;</em> tags.</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>dfs.replication<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>1<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>dfs.name.dir<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>file:///usr/local/Cellar/hadoop/hdfs/namenode <span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>dfs.data.dir<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>file:///usr/local/Cellar/hadoop/hdfs/datanode <span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></div>
+
+<h4 id="edit-yarn-sitexml">Edit yarn-site.xml</h4>
+<p>This file is used to configure yarn into Hadoop. It can be located at <em>/usr/local/Cellar/hadoop/x.x.x/libexec/etc/hadoop/yarn-site.xml</em> , open  and add the following properties in between the <em>&lt;configuration&gt;</em> and  <em>&lt;/configuration&gt;</em> tags in this file.</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.nodemanager.aux-services<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>mapreduce_shuffle<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></div>
+
+<h4 id="edit-mapred-sitexml">Edit mapred-site.xml</h4>
+<p>This file is used to specify which MapReduce framework we are using. By default, Hadoop contains a template of yarn-site.xml. First of all, it is required to copy the file from <strong>mapred-site.xml.template</strong> to <strong>mapred-site.xml</strong> file using the following command.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">cp mapred-site.xml.template mapred-site.xml</code></pre></div>
+
+<p>It can be located at <em>/usr/local/Cellar/hadoop/x.x.x/libexec/etc/hadoop/mapred-site.xml.template</em>. After copied, Open <strong>mapred-site.xml</strong> file and add the following properties in between the  <em>&lt;configuration&gt;</em> and  <em>&lt;/configuration&gt;</em> tags in this file.</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>mapreduce.framework.name<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>yarn<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></div>
+
+<h4 id="verifying-hadoop-installation">Verifying Hadoop Installation</h4>
+<p>The following steps are used to verify the Hadoop installation.
+Go to:</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">/usr/local/Cellar/hadoop/x.x.x/bin</code></pre></div>
+
+<h5 id="step-1-name-node-setup">Step 1: Name Node Setup</h5>
+<p>Set up the namenode using the command “hdfs namenode -format” as follows.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">hdfs namenode -format</code></pre></div>
+
+<h5 id="step-2-verifying-hadoop-dfs">Step 2: Verifying Hadoop dfs</h5>
+<p>The following command is used to start dfs. Executing this command will start your Hadoop file system.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">start-dfs.sh</code></pre></div>
+
+<h5 id="step-3-verifying-yarn-script">Step 3: Verifying Yarn Script</h5>
+<p>The following command is used to start the yarn script. Executing this command will start your yarn daemons.</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">start-yarn.sh</code></pre></div>
+
+<h5 id="step-4-accessing-hadoop-on-browser">Step 4: Accessing Hadoop on Browser</h5>
+<p>The default port number to access Hadoop is 50070. Use the following url to get Hadoop services on browser.</p>
+
+<pre><code>http://localhost:50070/
+</code></pre>
+
+<h5 id="step-5-verify-all-applications-for-cluster">Step 5: Verify All Applications for Cluster</h5>
+<p>The default port number to access all applications of cluster is 8088. Use the following url to visit this service</p>
+
+<pre><code>http://localhost:8088/
+</code></pre>
+
+<h4 id="alias">Alias</h4>
+<p>To simplify life edit your ~/.profile using vim or your favorite editor and add the following two commands</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nb">alias </span><span class="nv">hstart</span><span class="o">=</span><span class="s2">&quot;/usr/local/Cellar/hadoop/2.6.0/sbin/start-dfs.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/start-yarn.sh&quot;</span>
+<span class="nb">alias </span><span class="nv">hstop</span><span class="o">=</span><span class="s2">&quot;/usr/local/Cellar/hadoop/2.6.0/sbin/stop-yarn.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/stop-dfs.sh&quot;</span></code></pre></div>
+
+<p>and execute</p>
+
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nb">source</span> ~/.profile</code></pre></div>
+
+<p>Next time, we can run Hadoop just by typing </p>
+
+<pre><code>hstart
+</code></pre>
+
+<p>and stop using</p>
+
+<pre><code>hstop
+</code></pre>
+
+		</div>
+	</div>
+
+
+	
+	<div class="related">
+		<h4>Related Posts</h2>
+		<ul class="posts">
+		    
+		    <li>
+			  <span>20 Aug 2014 &raquo;</span>
+			  <a href="http://localhost:4000/sample-post">Sample post from harmony</a>
+		    </li>
+		    
+		    <li>
+			  <span>29 Jul 2014 &raquo;</span>
+			  <a href="http://localhost:4000/blog/jekyll/2014/07/29/welcome-to-jekyll/">What is Jekyll!</a>
+		    </li>
+		    
+		</ul>
+	</div>
+	
+
+	<div class="post-footer">
+		<div class="column-1">
+			
+				<a href="http://localhost:4000/sample-post"><< Older</a>
+			
+		</div>
+		<div class="column-2"><a href="http://localhost:4000/ ">Home</a></div>
+		<div class="column-3">
+			
+				<span>Newer >></span>
+			
+		</div>
+	</div>
+</div>
+ 
+
+        <footer class="main-footer">
+            <div class="wc-container">
+                <div class="column one">
+                    <h6>Few more links</h6>
+<ul class="menu">
+    <li><a href="http://localhost:4000/about">About</a></li>
+    <li><a href="http://localhost:4000/blog">Blog</a></li>
+    <li><a href="http://localhost:4000/faq">Help / FAQ</a></li>    
+</ul>		                    
+                </div>
+                <div class="column two">
+                    <h6>Follow me</h6>
+
+<ul class="social-media">
+
+
+    
+
+    
+    <li>
+        <a title="vothanhkiet on Github" 
+            href="https://github.com/vothanhkiet" 
+            class="github wc-img-replace" target="_blank">Github</a>
+    </li>
+     
+
+    
+    <li>
+        <a title="vo.thanh.kiet on Facebook" 
+            href="https://facebook.com/vo.thanh.kiet" 
+            class="facebook wc-img-replace" target="_blank">Facebook</a>
+    </li>
+    
+
+    
+    <li>
+        <a title="+KietThanhVo on Google Plus" 
+            href="https://plus.google.com/+KietThanhVo" 
+            class="google wc-img-replace" target="_blank">Google</a>
+    </li>
+    
+
+    
+
+    
+
+</ul>
+                </div>
+            </div>
+            <p class="wc-container disclaimer">
+                
+Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>
+            </p>
+        </footer>
+        <script type="text/javascript">
+          /* To avoid render blocking css */
+          var cb = function() {
+            var l = document.createElement('link'); l.rel = 'stylesheet';
+            l.href = 'http://fonts.googleapis.com/css?family=Ubuntu+Mono&subset=latin';
+            var h = document.getElementsByTagName('head')[0]; h.parentNode.insertBefore(l, h);
+          };
+          var raf = requestAnimationFrame || mozRequestAnimationFrame ||
+              webkitRequestAnimationFrame || msRequestAnimationFrame;
+          if (raf) raf(cb);
+          else window.addEventListener('load', cb);
+        </script>
+        <!-- jQuery -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- When no internet load JQuery from local -->
+        <script>window.jQuery || document.write('<script src="/assets/js/jquery.min.js"><\/script>')</script>
+        <!-- Site js -->
+        <script src="/assets/js/all.js"></script>
+        <!-- Google analytics  -->
+        
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-xxxx-x']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </body>        
+</html>
